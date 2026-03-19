@@ -31,7 +31,7 @@ Material:
     m_Floats:
     - _BlackStrength: 1
     - _EdgeSmooth: 0.3
-    - _Fade: 0.3874112
+    - _Fade: 0.18078478
     - _Metallic: 0.639
     - _Smoothness: 1
     m_Colors:
