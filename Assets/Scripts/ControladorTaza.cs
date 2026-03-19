@@ -1,0 +1,139 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ControladorTaza : MonoBehaviour
+{
+    public GameObject ParentTaza;
+    public GameObject Taza;
+    public GameObject MagicTaza;
+    public GameObject Tshirt;
+    public GameObject Thermo;
+    public GameObject _thermoReal;
+
+    public float speed;
+    public bool rotationOn;
+    public float OnAxis;
+
+    public Color ColorAza;
+    public bool OnButtonOver;
+    public float pos;
+
+    public GameObject Slider;
+    public GameObject SliderMagicObject;
+    public GameObject ParentPanel;
+    public GameObject Camara;
+
+    private int _ShootIndex = 0;
+    public int superSize = 2;
+    public GameObject FlashObject;
+    public bool Recording;
+
+    public float _sliderMagic;
+    public float _sliderReal;
+    public Material _sliderMaterial;
+
+    private MeshRenderer tazaRenderer;
+    private MeshRenderer thermoRealRenderer;
+    private MeshRenderer tshirtRenderer;
+    private MeshRenderer magicTazaRenderer;
+
+    private ControladorImagenes controladorImagenes;
+
+    void Start()
+    {
+        controladorImagenes = GetComponent<ControladorImagenes>();
+
+        tazaRenderer = Taza.GetComponent<MeshRenderer>();
+        thermoRealRenderer = _thermoReal.GetComponent<MeshRenderer>();
+        tshirtRenderer = Tshirt.GetComponent<MeshRenderer>();
+        magicTazaRenderer = MagicTaza.GetComponent<MeshRenderer>();
+
+        // Aplicar textura inicial SIN instanciar
+        tazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+    }
+
+    void Update()
+    {
+        ParentTaza.transform.localRotation = Quaternion.Euler(0, OnAxis, 0);
+
+        // 🔥 USAR sharedMaterials SIEMPRE
+        tazaRenderer.sharedMaterials[2].color = ColorAza;
+        tazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+
+        thermoRealRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
+        tshirtRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
+        magicTazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+
+        pos = Input.mousePosition.x;
+        OnAxis = Slider.GetComponent<Slider>().value;
+        _sliderMagic = SliderMagicObject.GetComponent<Slider>().value;
+        _sliderReal = _sliderMagic / 360;
+
+        HeatController();
+
+        if (!rotationOn)
+        {
+            Slider.SetActive(true);
+        }
+        else
+        {
+            Slider.SetActive(false);
+            Slider.GetComponent<Slider>().value += speed * Time.deltaTime;
+
+            if (OnAxis >= 359)
+                Slider.GetComponent<Slider>().value = 0;
+        }
+
+        if (Input.mousePosition.x > 675 && Input.GetMouseButtonDown(0) && !OnButtonOver && !Recording)
+        {
+            rotationOn = !rotationOn;
+            Debug.Log("se detiene");
+        }
+    }
+
+    public void ScreenShoot()
+    {
+        StartCoroutine(PhotoTake());
+    }
+
+    public IEnumerator PhotoTake()
+    {
+        ParentPanel.SetActive(false);
+        Camara.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+
+        ScreenCapture.CaptureScreenshot($"Screenshoot{_ShootIndex}.png", superSize);
+        _ShootIndex++;
+
+        FlashObject.GetComponent<Image>().enabled = true;
+
+        yield return new WaitForSeconds(0.1f);
+
+        Camara.GetComponent<Camera>().rect = new Rect(0.5f, 0, 1, 1);
+        ParentPanel.SetActive(true);
+        FlashObject.GetComponent<Image>().enabled = false;
+    }
+
+    public void ChangeItem(int id)
+    {
+        Taza.SetActive(false);
+        Tshirt.SetActive(false);
+        Thermo.SetActive(false);
+        MagicTaza.SetActive(false);
+
+        switch (id)
+        {
+            case 0: Taza.SetActive(true); break;
+            case 1: Tshirt.SetActive(true); break;
+            case 2: Thermo.SetActive(true); break;
+            case 3: MagicTaza.SetActive(true); break;
+        }
+    }
+
+    public void HeatController()
+    {
+            Material mat = _sliderMaterial; // Esto crea una instancia para este objeto
+            mat.SetFloat("_Fade", _sliderReal);
+    }
+}
