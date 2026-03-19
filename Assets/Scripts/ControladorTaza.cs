@@ -11,6 +11,11 @@ public class ControladorTaza : MonoBehaviour
     public GameObject Tshirt;
     public GameObject Thermo;
     public GameObject _thermoReal;
+    public GameObject _mousePad;
+    public GameObject _playMat;
+
+    public GameObject[] _mouses;
+    public GameObject _deck;
 
     public float speed;
     public bool rotationOn;
@@ -38,9 +43,23 @@ public class ControladorTaza : MonoBehaviour
     private MeshRenderer thermoRealRenderer;
     private MeshRenderer tshirtRenderer;
     private MeshRenderer magicTazaRenderer;
+    private MeshRenderer mouseRenderer;
+    private MeshRenderer playmatRenderer;
 
     private ControladorImagenes controladorImagenes;
 
+    private Camera cam;
+    private Slider slider;
+    private Slider sliderMagic;
+    private Image flashImage;
+
+    public int _onID;
+    public int _extraID;
+    public bool _mouseOn;
+
+    public GameObject _deckObject;
+    public Texture[] _deckCards;
+    public Material _cardMaterial;
     void Start()
     {
         controladorImagenes = GetComponent<ControladorImagenes>();
@@ -49,8 +68,15 @@ public class ControladorTaza : MonoBehaviour
         thermoRealRenderer = _thermoReal.GetComponent<MeshRenderer>();
         tshirtRenderer = Tshirt.GetComponent<MeshRenderer>();
         magicTazaRenderer = MagicTaza.GetComponent<MeshRenderer>();
+        mouseRenderer = _mousePad.GetComponent<MeshRenderer>();
+        playmatRenderer = _playMat.GetComponent<MeshRenderer>();
 
-        // Aplicar textura inicial SIN instanciar
+        cam = Camara.GetComponent<Camera>();
+        slider = Slider.GetComponent<Slider>();
+        sliderMagic = SliderMagicObject.GetComponent<Slider>();
+        flashImage = FlashObject.GetComponent<Image>();
+
+        // textura inicial
         tazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
     }
 
@@ -58,18 +84,21 @@ public class ControladorTaza : MonoBehaviour
     {
         ParentTaza.transform.localRotation = Quaternion.Euler(0, OnAxis, 0);
 
-        // 🔥 USAR sharedMaterials SIEMPRE
+        // materiales
         tazaRenderer.sharedMaterials[2].color = ColorAza;
         tazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
 
         thermoRealRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
         tshirtRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
         magicTazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+        mouseRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+        playmatRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
 
         pos = Input.mousePosition.x;
-        OnAxis = Slider.GetComponent<Slider>().value;
-        _sliderMagic = SliderMagicObject.GetComponent<Slider>().value;
-        _sliderReal = _sliderMagic / 360;
+        OnAxis = slider.value;
+
+        _sliderMagic = sliderMagic.value;
+        _sliderReal = _sliderMagic / 360f;
 
         HeatController();
 
@@ -80,10 +109,10 @@ public class ControladorTaza : MonoBehaviour
         else
         {
             Slider.SetActive(false);
-            Slider.GetComponent<Slider>().value += speed * Time.deltaTime;
+            slider.value += speed * Time.deltaTime;
 
             if (OnAxis >= 359)
-                Slider.GetComponent<Slider>().value = 0;
+                slider.value = 0;
         }
 
         if (Input.mousePosition.x > 675 && Input.GetMouseButtonDown(0) && !OnButtonOver && !Recording)
@@ -101,18 +130,23 @@ public class ControladorTaza : MonoBehaviour
     public IEnumerator PhotoTake()
     {
         ParentPanel.SetActive(false);
-        Camara.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+        cam.rect = new Rect(0, 0, 1, 1);
 
-        ScreenCapture.CaptureScreenshot($"Screenshoot{_ShootIndex}.png", superSize);
+        // ruta de guardado
+        string path = Application.persistentDataPath + "/Screenshot_" + _ShootIndex + ".png";
+
+        ScreenCapture.CaptureScreenshot(path, superSize);
+        Debug.Log("Screenshot guardado en: " + path);
+
         _ShootIndex++;
 
-        FlashObject.GetComponent<Image>().enabled = true;
+        flashImage.enabled = true;
 
         yield return new WaitForSeconds(0.1f);
 
-        Camara.GetComponent<Camera>().rect = new Rect(0.5f, 0, 1, 1);
+        cam.rect = new Rect(0.5f, 0, 1, 1);
         ParentPanel.SetActive(true);
-        FlashObject.GetComponent<Image>().enabled = false;
+        flashImage.enabled = false;
     }
 
     public void ChangeItem(int id)
@@ -121,6 +155,8 @@ public class ControladorTaza : MonoBehaviour
         Tshirt.SetActive(false);
         Thermo.SetActive(false);
         MagicTaza.SetActive(false);
+        _mousePad.SetActive(false);
+        _playMat.SetActive(false);
 
         switch (id)
         {
@@ -128,12 +164,69 @@ public class ControladorTaza : MonoBehaviour
             case 1: Tshirt.SetActive(true); break;
             case 2: Thermo.SetActive(true); break;
             case 3: MagicTaza.SetActive(true); break;
+            case 4: _mousePad.SetActive(true); break;
+            case 5: _playMat.SetActive(true); break;
         }
+        _onID = id;
+        MouseVoid();
     }
 
     public void HeatController()
     {
-            Material mat = _sliderMaterial; // Esto crea una instancia para este objeto
-            mat.SetFloat("_Fade", _sliderReal);
+        // aplicar shader correctamente
+        _sliderMaterial.SetFloat("_Fade", _sliderReal);
+    }
+
+    public void MouseVoid()
+    {
+        _mouses[0].SetActive(false);
+        _mouses[1].SetActive(false);
+        _deckObject.SetActive(false);
+
+        switch (_onID)
+        {
+            default:
+
+                break;
+            case 4:
+                _mouseOn = !_mouseOn;
+                _mouses[0].SetActive(_mouseOn);
+                break;
+            case 5:
+           
+                switch (_extraID)
+                {
+                    case 0:
+                        _mouses[1].SetActive(false);
+                        _deckObject.SetActive(false);
+                        _extraID++;
+                        break;
+                    case 1:
+                        _mouses[1].SetActive(true);
+                        _deckObject.SetActive(false);
+                        _extraID++;
+                        break;
+                    case 2:
+                        _deckObject.SetActive(true);
+                        _cardMaterial.mainTexture = _deckCards[0];
+                        _extraID++;
+                        break;
+                    case 3:
+                        _deckObject.SetActive(true);
+                        _cardMaterial.mainTexture = _deckCards[1];
+                        _extraID++;
+                        break;
+                    case 4:
+                        _deckObject.SetActive(true);
+                        _cardMaterial.mainTexture = _deckCards[2];
+                        _extraID = 0;
+                        break;
+                }
+                break;
+        }
+
+           
+
+ 
     }
 }

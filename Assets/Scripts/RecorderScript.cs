@@ -1,37 +1,34 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.Profiling;
-using UnityEditor.Recorder;
-using UnityEditor;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.Recorder;
+#endif
 
 public class RecorderScript : MonoBehaviour
 {
+#if UNITY_EDITOR
     Recorder behaviourUpdateRecorder;
+#endif
 
     public bool Graba;
 
-
+#if UNITY_EDITOR
     private RecorderWindow GetRecorderWindow()
     {
         return (RecorderWindow)EditorWindow.GetWindow(typeof(RecorderWindow));
     }
-    // Start is called before the first frame update
+#endif
+
     void Start()
     {
-        //RecorderWindow recorderWindow = GetRecorderWindow();
-
-
-
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-        //RecorderWindow recorderWindow = GetRecorderWindow();
- 
     }
 
     public void StartRecordingVoid()
@@ -41,32 +38,31 @@ public class RecorderScript : MonoBehaviour
 
     public IEnumerator Recording()
     {
-        this.GetComponent<ControladorTaza>().ParentPanel.SetActive(false);
-        this.GetComponent<ControladorTaza>().Camara.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-        this.GetComponent<ControladorTaza>().Slider.GetComponent<Slider>().value = 0;
-        this.GetComponent<ControladorTaza>().rotationOn = true;
-        this.GetComponent<ControladorTaza>().Recording = true;
+        var taza = this.GetComponent<ControladorTaza>();
+
+        taza.ParentPanel.SetActive(false);
+        taza.Camara.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+        taza.Slider.GetComponent<Slider>().value = 0;
+        taza.rotationOn = true;
+        taza.Recording = true;
+
+#if UNITY_EDITOR
         RecorderWindow recorderWindow = GetRecorderWindow();
         recorderWindow.StartRecording();
+#endif
 
-        while (this.GetComponent<ControladorTaza>().OnAxis <= 359)
+        while (taza.OnAxis <= 359)
         {
             yield return null;
         }
 
-        this.GetComponent<ControladorTaza>().ParentPanel.SetActive(true);
-        this.GetComponent<ControladorTaza>().Camara.GetComponent<Camera>().rect = new Rect(0.5f, 0, 1, 1);
- 
-        this.GetComponent<ControladorTaza>().rotationOn = false;
-        this.GetComponent<ControladorTaza>().Recording = false;
+        taza.ParentPanel.SetActive(true);
+        taza.Camara.GetComponent<Camera>().rect = new Rect(0.5f, 0, 1, 1);
+        taza.rotationOn = false;
+        taza.Recording = false;
 
+#if UNITY_EDITOR
         recorderWindow.StopRecording();
+#endif
     }
-
-
-
-
-
-
-
 }
