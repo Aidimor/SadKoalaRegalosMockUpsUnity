@@ -13,6 +13,7 @@ public class ControladorTaza : MonoBehaviour
     public GameObject _thermoReal;
     public GameObject _mousePad;
     public GameObject _playMat;
+    public GameObject _mousePadCircular;
 
     public GameObject[] _mouses;
     public GameObject _deck;
@@ -45,7 +46,7 @@ public class ControladorTaza : MonoBehaviour
     private MeshRenderer magicTazaRenderer;
     private MeshRenderer mouseRenderer;
     private MeshRenderer playmatRenderer;
-
+    private MeshRenderer mousePadCircularRenderer;
     private ControladorImagenes controladorImagenes;
 
     private Camera cam;
@@ -70,6 +71,7 @@ public class ControladorTaza : MonoBehaviour
         magicTazaRenderer = MagicTaza.GetComponent<MeshRenderer>();
         mouseRenderer = _mousePad.GetComponent<MeshRenderer>();
         playmatRenderer = _playMat.GetComponent<MeshRenderer>();
+        mousePadCircularRenderer = _mousePadCircular.GetComponent<MeshRenderer>();
 
         cam = Camara.GetComponent<Camera>();
         slider = Slider.GetComponent<Slider>();
@@ -132,8 +134,9 @@ public class ControladorTaza : MonoBehaviour
         ParentPanel.SetActive(false);
         cam.rect = new Rect(0, 0, 1, 1);
 
-        // ruta de guardado
-        string path = Application.persistentDataPath + "/Screenshot_" + _ShootIndex + ".png";
+        // 🔥 guardar en escritorio
+        string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+        string path = desktopPath + "/Screenshot_" + _ShootIndex + ".png";
 
         ScreenCapture.CaptureScreenshot(path, superSize);
         Debug.Log("Screenshot guardado en: " + path);
@@ -157,6 +160,7 @@ public class ControladorTaza : MonoBehaviour
         MagicTaza.SetActive(false);
         _mousePad.SetActive(false);
         _playMat.SetActive(false);
+        _mousePadCircular.SetActive(false);
 
         switch (id)
         {
@@ -166,6 +170,7 @@ public class ControladorTaza : MonoBehaviour
             case 3: MagicTaza.SetActive(true); break;
             case 4: _mousePad.SetActive(true); break;
             case 5: _playMat.SetActive(true); break;
+            case 6: _mousePadCircular.SetActive(true); break;
         }
         _onID = id;
         MouseVoid();
@@ -189,6 +194,7 @@ public class ControladorTaza : MonoBehaviour
 
                 break;
             case 4:
+            case 6:
                 _mouseOn = !_mouseOn;
                 _mouses[0].SetActive(_mouseOn);
                 break;
