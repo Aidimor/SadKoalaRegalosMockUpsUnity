@@ -14,6 +14,11 @@ public class ControladorTaza : MonoBehaviour
     public GameObject _mousePad;
     public GameObject _playMat;
     public GameObject _mousePadCircular;
+    public GameObject _fosfoMug;
+    public GameObject _fosfoMain;
+    public GameObject _fosfoImage;
+    public GameObject _termo2;
+    public GameObject _rompecabezas;
 
     public GameObject[] _mouses;
     public GameObject _deck;
@@ -39,6 +44,7 @@ public class ControladorTaza : MonoBehaviour
     public float _sliderMagic;
     public float _sliderReal;
     public Material _sliderMaterial;
+    public Material _fosfoMaterial;
 
     private MeshRenderer tazaRenderer;
     private MeshRenderer thermoRealRenderer;
@@ -47,6 +53,10 @@ public class ControladorTaza : MonoBehaviour
     private MeshRenderer mouseRenderer;
     private MeshRenderer playmatRenderer;
     private MeshRenderer mousePadCircularRenderer;
+    private MeshRenderer fosfoRenderer;
+    private MeshRenderer fosfoRendererImage;
+    private MeshRenderer termo2Renderer;
+    private MeshRenderer puzzleRenderer;
     private ControladorImagenes controladorImagenes;
 
     private Camera cam;
@@ -66,6 +76,8 @@ public class ControladorTaza : MonoBehaviour
         controladorImagenes = GetComponent<ControladorImagenes>();
 
         tazaRenderer = Taza.GetComponent<MeshRenderer>();
+        fosfoRenderer = _fosfoMain.GetComponent<MeshRenderer>();
+        fosfoRendererImage = _fosfoImage.GetComponent<MeshRenderer>();
         thermoRealRenderer = _thermoReal.GetComponent<MeshRenderer>();
         tshirtRenderer = Tshirt.GetComponent<MeshRenderer>();
         magicTazaRenderer = MagicTaza.GetComponent<MeshRenderer>();
@@ -88,8 +100,9 @@ public class ControladorTaza : MonoBehaviour
 
         // materiales
         tazaRenderer.sharedMaterials[2].color = ColorAza;
+        fosfoRenderer.material.SetColor("_TopColor", ColorAza);
         tazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
-
+        fosfoRendererImage.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
         thermoRealRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
         tshirtRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
         magicTazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
@@ -134,9 +147,20 @@ public class ControladorTaza : MonoBehaviour
         ParentPanel.SetActive(false);
         cam.rect = new Rect(0, 0, 1, 1);
 
-        // 🔥 guardar en escritorio
+        // 🔥 ruta escritorio
         string desktopPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
-        string path = desktopPath + "/Screenshot_" + _ShootIndex + ".png";
+
+        // 🔥 carpeta Mockup
+        string folderPath = System.IO.Path.Combine(desktopPath, "Mockup");
+
+        // 🔥 crear carpeta si no existe
+        if (!System.IO.Directory.Exists(folderPath))
+        {
+            System.IO.Directory.CreateDirectory(folderPath);
+        }
+
+        // 🔥 ruta final del archivo
+        string path = System.IO.Path.Combine(folderPath, "Screenshot_" + _ShootIndex + ".png");
 
         ScreenCapture.CaptureScreenshot(path, superSize);
         Debug.Log("Screenshot guardado en: " + path);
@@ -161,6 +185,9 @@ public class ControladorTaza : MonoBehaviour
         _mousePad.SetActive(false);
         _playMat.SetActive(false);
         _mousePadCircular.SetActive(false);
+        _fosfoMug.SetActive(false);
+        _termo2.SetActive(false);
+        _rompecabezas.SetActive(false);
 
         switch (id)
         {
@@ -171,6 +198,9 @@ public class ControladorTaza : MonoBehaviour
             case 4: _mousePad.SetActive(true); break;
             case 5: _playMat.SetActive(true); break;
             case 6: _mousePadCircular.SetActive(true); break;
+            case 7: _fosfoMug.SetActive(true); break;
+            case 8: _termo2.SetActive(true); break;
+            case 9: _rompecabezas.SetActive(true); break;
         }
         _onID = id;
         MouseVoid();
