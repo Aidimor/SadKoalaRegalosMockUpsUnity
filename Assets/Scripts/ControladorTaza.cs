@@ -19,6 +19,7 @@ public class ControladorTaza : MonoBehaviour
     public GameObject _fosfoImage;
     public GameObject _termo2;
     public GameObject _rompecabezas;
+    public GameObject _poster;
 
     public GameObject[] _mouses;
     public GameObject _deck;
@@ -57,6 +58,7 @@ public class ControladorTaza : MonoBehaviour
     private MeshRenderer fosfoRendererImage;
     private MeshRenderer termo2Renderer;
     private MeshRenderer puzzleRenderer;
+    private MeshRenderer posterRenderer;
     private ControladorImagenes controladorImagenes;
 
     private Camera cam;
@@ -84,6 +86,7 @@ public class ControladorTaza : MonoBehaviour
         mouseRenderer = _mousePad.GetComponent<MeshRenderer>();
         playmatRenderer = _playMat.GetComponent<MeshRenderer>();
         mousePadCircularRenderer = _mousePadCircular.GetComponent<MeshRenderer>();
+        posterRenderer = _poster.GetComponent<MeshRenderer>();
 
         cam = Camara.GetComponent<Camera>();
         slider = Slider.GetComponent<Slider>();
@@ -108,6 +111,7 @@ public class ControladorTaza : MonoBehaviour
         magicTazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
         mouseRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
         playmatRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+        posterRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
 
         pos = Input.mousePosition.x;
         OnAxis = slider.value;
@@ -188,6 +192,7 @@ public class ControladorTaza : MonoBehaviour
         _fosfoMug.SetActive(false);
         _termo2.SetActive(false);
         _rompecabezas.SetActive(false);
+        _poster.SetActive(false);
 
         switch (id)
         {
@@ -201,6 +206,7 @@ public class ControladorTaza : MonoBehaviour
             case 7: _fosfoMug.SetActive(true); break;
             case 8: _termo2.SetActive(true); break;
             case 9: _rompecabezas.SetActive(true); break;
+            case 10: _poster.SetActive(true); break;
         }
         _onID = id;
         MouseVoid();
