@@ -20,6 +20,7 @@ public class ControladorTaza : MonoBehaviour
     public GameObject _termo2;
     public GameObject _rompecabezas;
     public GameObject _poster;
+    public GameObject _posterLight;
 
     public GameObject[] _mouses;
     public GameObject _deck;
@@ -111,7 +112,7 @@ public class ControladorTaza : MonoBehaviour
         magicTazaRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
         mouseRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
         playmatRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
-        posterRenderer.sharedMaterials[1].mainTexture = controladorImagenes.image.texture;
+        posterRenderer.sharedMaterials[0].mainTexture = controladorImagenes.image.texture;
 
         pos = Input.mousePosition.x;
         OnAxis = slider.value;
@@ -193,6 +194,7 @@ public class ControladorTaza : MonoBehaviour
         _termo2.SetActive(false);
         _rompecabezas.SetActive(false);
         _poster.SetActive(false);
+        _posterLight.SetActive(false);
 
         switch (id)
         {
@@ -206,7 +208,7 @@ public class ControladorTaza : MonoBehaviour
             case 7: _fosfoMug.SetActive(true); break;
             case 8: _termo2.SetActive(true); break;
             case 9: _rompecabezas.SetActive(true); break;
-            case 10: _poster.SetActive(true); break;
+            case 10: _poster.SetActive(true); _posterLight.SetActive(true); break;
         }
         _onID = id;
         MouseVoid();
