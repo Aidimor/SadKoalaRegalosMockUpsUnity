@@ -21,6 +21,7 @@ public class ControladorTaza : MonoBehaviour
     public GameObject _rompecabezas;
     public GameObject _poster;
     public GameObject _posterLight;
+    public GameObject _cuadro;
 
     public GameObject[] _mouses;
     public GameObject _deck;
@@ -195,6 +196,7 @@ public class ControladorTaza : MonoBehaviour
         _rompecabezas.SetActive(false);
         _poster.SetActive(false);
         _posterLight.SetActive(false);
+        _cuadro.SetActive(false);
 
         switch (id)
         {
@@ -209,6 +211,7 @@ public class ControladorTaza : MonoBehaviour
             case 8: _termo2.SetActive(true); break;
             case 9: _rompecabezas.SetActive(true); break;
             case 10: _poster.SetActive(true); _posterLight.SetActive(true); break;
+            case 11: _cuadro.SetActive(true); _posterLight.SetActive(true); break;
         }
         _onID = id;
         MouseVoid();
